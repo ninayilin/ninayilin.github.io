@@ -1,0 +1,44 @@
+.top-section {
+    background-image: url('images/background1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 25vh; /* 25% of the viewport height */
+    color: white;
+    padding: 20px; /* Adds space inside the section */
+    box-sizing: border-box; /* Ensures padding doesn't affect height */
+}
+
+/* Bottom Section */
+.bottom-section {
+    background-image: url('images/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 75vh; /* 75% of the viewport height */
+    color: black;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* General Styles */
+h1 {
+    font-family: "Lucida Console", Monaco, monospace; /* Set Lucida Console as the font */
+    color: white; /* Optional styling */
+    text-align: left; /* Optional alignment */
+}
+    
+body {
+    background-image: url('images/background1.jpg'); 
+    background-size: cover; /* Makes the image cover the entire screen */
+    background-position: center;
+    height:400px;
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-attachment: fixed; /* Keeps the image fixed while scrolling */
+    font-family: "Courier New", "Lucida Console", Monaco, monospace;
+    font-family: Verdana, Geneva, sans-serif;
+}
+img {
+    float: right;
+    margin: 10px; /*adds spacing!! */
+}
