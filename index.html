@@ -1,33 +1,346 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Pomodoro Timer</title>
+  <style>
+    body {
+      font-family: Verdana;
+      text-align: center;
+      margin-top: 100px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      background-image: url('images/wallpaper.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+    }
 
-    <head>
-        <!-- Connects to CSS file -->
-        <title>Nina's Website</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
+    #timer {
+      font-size: 90px;
+      margin: 40px;
+    }
 
-    <body>
-        <!-- top section, background image 1 + portait-->
-         <div class="top-section">
-            <h1>Nina Y</h1>
-        <!-- Adding my picture -->
-        <img src="images/portrait2.jpg" alt="Me!" width="300">
-        <p>
-            Note: This website is currently under construction
-            and the first draft will be out by Dec 1st. Thank you 
-            for your patience. :)
-        </p>
-        <a href="https://www.linkedin.com/in/yyl-nina">LinkedIn</a>
+    h2 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    /* Timer control buttons layout */
+    #button-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    /* Shared button styles */
+    #button-row button,
+    .work-btn {
+      font-family: Verdana;
+      font-size: 20px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
+      cursor: pointer;
+      position: relative;
+      top: 0;
+    }
+
+    #button-row button:active,
+    .work-btn:active,
+    .reset-btn:active {
+      box-shadow: 0 2px #444;
+      top: 4px;
+    }
+
+    /* Individual button colors */
+    .short-btn { background-color: #CBAED7; color: white; }
+    #toggle-btn { background-color: #B691D2; color: white; }
+    .long-btn { background-color: #9B6DC6; color: white; }
+
+    .work-btn {
+      font-size: 18px;
+      background-color: #B47CB6;
+      margin-top: 20px;
+      padding: 8px 20px;
+    }
+
+    /* Reset button floating in bottom-left */
+    .reset-btn {
+      font-size: 14px;
+      padding: 6px 15px;
+      background-color: #E57373;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    /* Overall layout */
+    .content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .left {
+      flex: 1.5;
+      min-width: 350px;
+    }
+
+    .right {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding-top: 40px;
+    }
+
+    /* Image styling */
+    .side-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 30px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Tally text overlay inside notepad */
+    .log-area {
+      position: absolute;
+      top: 285px;         /* aligned lower on notepad */
+      right: 102px;
+      width: 110px;
+      height: 140px;
+      font-size: 20px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      color: #5a2a2a;
+      line-height: 1.6;
+      pointer-events: none;
+      text-align: left;
+    }
+
+    .divider {
+      width: 10px;
+      height: 600px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 2px;
+      margin: 0 20px;
+    }
+
+    .progress-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    /* Small buttons below notepad */
+    .small-btn {
+      font-size: 12px;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
+      background-color: #ffb9d7;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .small-btn.clear {
+      background-color: hsl(50, 100%, 64%);
+    }
+
+    .small-btn:active {
+      box-shadow: 0 1px #000000;
+      top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <!-- LEFT SIDE (Timer) -->
+    <div class="left">
+      <h2>Rawr: Advanced Pomodoro Timer</h2>
+      <div id="timer">25:00</div>
+
+      <div id="button-row">
+        <button class="short-btn" onclick="startBreak(5)">Short Break</button>
+        <button id="toggle-btn" onclick="toggleTimer()">Start</button>
+        <button class="long-btn" onclick="startBreak(15)">Long Break</button>
+      </div>
+
+      <button class="work-btn" onclick="startWork()">Work</button>
     </div>
 
-    <div class="bottom-section">
-        <p>Welcome to the second section of my website</p>
-    </div>
-    </body>
+    <div class="divider"></div>
 
-    <footer>
-        <p>© 2024 Nina's Website. All rights reserved.</p>
-    </footer>
-    
+    <!-- RIGHT SIDE (Progress Log) -->
+    <div class="right-wrapper" style="position: relative;">
+      <div class="right">
+        <h3 class="progress-title">Your Progress</h3>
+        <img src="images/notepad.jpg" alt="Notepad" class="side-image">
+      </div>
+
+      <!-- Log that overlays notepad -->
+      <div id="log" class="log-area"></div>
+
+      <!-- Tally control buttons -->
+      <div style="margin-top: 10px;">
+        <button class="small-btn" onclick="removeTally()">Remove</button>
+        <button class="small-btn clear" onclick="clearTallies()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating reset timer button -->
+  <button class="reset-btn" onclick="resetTimer()">Reset</button>
+
+  <script>
+    let timeLeft = 25 * 60;
+    let timerId = null;
+    let running = false;
+    let currentMode = 'work';      // can be 'short', 'long', or 'work'
+    let tallyCount = 0;
+    const maxTallies = 35;         // max number of tally marks allowed
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById("timer").textContent = formatTime(timeLeft);
+    }
+
+    // Add one tally, redraw formatted tally log
+    function addTally() {
+      if (tallyCount >= maxTallies) return;
+
+      tallyCount++;
+      const logDiv = document.getElementById("log");
+
+      let display = "";
+      for (let i = 1; i <= tallyCount; i++) {
+        display += "|";
+        if (i % 5 === 0) display += " ";  // group every 5
+        if (i % 15 === 0) display += "\n"; // wrap to new line every 15
+      }
+
+      logDiv.textContent = display;
+    }
+
+    function toggleTimer() {
+      const button = document.getElementById("toggle-btn");
+      addTally(); // update progress log
+
+      if (!running) {
+        running = true;
+        button.textContent = "Stop";
+
+        timerId = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay();
+          } else {
+            clearInterval(timerId);
+            running = false;
+            button.textContent = "Start";
+            alert("Time's up!");
+          }
+        }, 1000);
+
+      } else {
+        running = false;
+        clearInterval(timerId);
+        button.textContent = "Start";
+      }
+    }
+
+    function startBreak(minutes) {
+      clearInterval(timerId);
+      timeLeft = minutes * 60;
+      currentMode = minutes === 5 ? 'short' : 'long';
+      running = true;
+      document.getElementById("toggle-btn").textContent = "Stop";
+      updateDisplay();
+
+      timerId = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timerId);
+          running = false;
+          document.getElementById("toggle-btn").textContent = "Start";
+          alert("Break over!");
+        }
+      }, 1000);
+    }
+
+    function startWork() {
+      clearInterval(timerId);
+      timeLeft = 25 * 60;
+      currentMode = 'work';
+      running = true;
+      document.getElementById("toggle-btn").textContent = "Stop";
+      updateDisplay();
+
+      timerId = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timerId);
+          running = false;
+          document.getElementById("toggle-btn").textContent = "Start";
+          alert("Work session complete!");
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      running = false;
+      document.getElementById("toggle-btn").textContent = "Start";
+
+      timeLeft = currentMode === 'short' ? 5 * 60 :
+                 currentMode === 'long'  ? 15 * 60 : 25 * 60;
+
+      updateDisplay();
+    }
+
+    function clearTallies() {
+      tallyCount = 0;
+      document.getElementById("log").textContent = "";
+    }
+
+    function removeTally() {
+      if (tallyCount > 0) tallyCount--;
+
+      const logDiv = document.getElementById("log");
+      let display = "";
+      for (let i = 1; i <= tallyCount; i++) {
+        display += "|";
+        if (i % 5 === 0) display += " ";
+        if (i % 15 === 0) display += "\n";
+      }
+      logDiv.textContent = display;
+    }
+
+    updateDisplay();
+  </script>
+</body>
 </html>
